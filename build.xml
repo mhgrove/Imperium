@@ -10,6 +10,7 @@
 
     <property name="build" location="build" />
     <property name="dist" location="dist" />
+	<property name="dist.module" location="${dist}/module"/>
 
     <property name="project.name" value="imperium" />
     <property name="project.version" value="0.1" />
@@ -87,6 +88,27 @@
              basedir="${build}">
         </jar>
     </target>
+
+	<target name="module" depends="clean">
+		<mkdir dir="${dist}"/>
+		<mkdir dir="${dist.module}"/>
+
+		<mkdir dir="${dist.module}/app"/>
+		<mkdir dir="${dist.module}/lib"/>
+
+        <copy todir="${dist.module}/lib" flatten="true">
+            <fileset dir="${core.lib}">
+                <include name="**/*.jar" />
+                <exclude name="**/${project.name}*.jar"/>
+            </fileset>
+        </copy>
+
+        <copy todir="${dist.module}/app">
+            <fileset dir="${core.src}">
+                <include name="**/*.java" />
+            </fileset>
+        </copy>
+	</target>
 
     <target name="clean" description="Clean up build files">
         <delete dir="${build}" />
