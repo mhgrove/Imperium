@@ -13,7 +13,7 @@
 	<property name="dist.module" location="${dist}/module"/>
 
     <property name="project.name" value="imperium" />
-    <property name="project.version" value="0.1" />
+    <property name="project.version" value="0.2" />
 
     <path id="project.class.path">
         <pathelement location="${core.lib}" />
@@ -100,6 +100,7 @@
             <fileset dir="${core.lib}">
                 <include name="**/*.jar" />
                 <exclude name="**/${project.name}*.jar"/>
+                <exclude name="**/play*.jar"/>
             </fileset>
         </copy>
 

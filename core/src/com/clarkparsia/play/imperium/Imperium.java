@@ -38,7 +38,7 @@ public class Imperium {
 	 * The current EntityManager
 	 */
 	@PersistenceContext(name="imperium")
-	EntityManager mEntityManager;
+	public EntityManager mEntityManager;
 
 	/**
 	 * Return whether or not Empire has been initialized for the local thread context
