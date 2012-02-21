@@ -36,6 +36,7 @@ import com.clarkparsia.empire.config.io.ConfigReader;
 import com.clarkparsia.empire.config.io.impl.PropertiesConfigReader;
 import com.clarkparsia.empire.config.io.impl.XmlConfigReader;
 import com.clarkparsia.empire.util.EmpireModule;
+import com.clarkparsia.empire.util.DefaultEmpireModule;
 
 import com.clarkparsia.empire.sesametwo.OpenRdfEmpireModule;
 
@@ -99,8 +100,10 @@ public class EmpirePlugin extends PlayPlugin {
 		Map<String, String> aGlobalConfig = new HashMap<String, String>();
 //		aGlobalConfig.put(ConfigKeys.ANNOTATION_INDEX, "empire.config");
 
-		if (!isEmpireConfigFound()) {
-			EmpireConfiguration aEmpireConfig = new EmpireConfiguration(aGlobalConfig,
+		EmpireConfiguration aEmpireConfig = DefaultEmpireModule.readConfiguration();
+
+		if (aEmpireConfig == null) {
+			aEmpireConfig = new EmpireConfiguration(aGlobalConfig,
 													Collections.singletonMap("imperium", aConfig));
 
 			try {
@@ -114,9 +117,9 @@ public class EmpirePlugin extends PlayPlugin {
 
 					aEmpireConfig = aReader.read(new FileInputStream(aPath));
 				}
-				else if (Play.getVirtualFile("conf/empire.config.properties") != null &&
-						 Play.getVirtualFile("conf/empire.config.properties").exists()) {
-					aEmpireConfig = new PropertiesConfigReader().read(new FileInputStream(Play.getVirtualFile("conf/empire.config.properties").getRealFile()));
+				else if (Play.getVirtualFile("conf/empire.configuration") != null &&
+						 Play.getVirtualFile("conf/empire.configuration").exists()) {
+					aEmpireConfig = new PropertiesConfigReader().read(new FileInputStream(Play.getVirtualFile("conf/empire.configuration").getRealFile()));
 				}
 			}
 			catch (IOException e) {
@@ -126,47 +129,10 @@ public class EmpirePlugin extends PlayPlugin {
 			catch (EmpireException e) {
 				play.Logger.error("empire config load error", e);
 			}
-			
-			Empire.init(aEmpireConfig,
-						aModules.toArray(new EmpireModule[aModules.size()]));
-		}
-		else {
-			Empire.init(aModules.toArray(new EmpireModule[aModules.size()]));
-		}
-	}
-
-	/**
-	 * Return whether or not there is a local Empire config file available
-	 * @return true if there is a config file, false otherwise
-	 */
-	private boolean isEmpireConfigFound() {
-		// TODO: refer to something in Empire core that determins this rather than having this code copied from
-		// DefaultEmpireModule
-
-		File aConfigFile = null;
-
-		// not ideal, really we want just a single standard config file name with the system property which can override
-		// that.  but since we don't have a standard yet, we'll check a bunch of them.
-		if (System.getProperty("empire.configuration.file") != null && new File(System.getProperty("empire.configuration.file")).exists()) {
-			aConfigFile = new File(System.getProperty("empire.configuration.file"));
-		}
-		else if (new File("empire.config").exists()) {
-			aConfigFile = new File("empire.config");
-		}
-		else if (new File("empire.properties").exists()) {
-			aConfigFile = new File("empire.properties");
-		}
-		else if (new File("empire.config.properties").exists()) {
-			aConfigFile = new File("empire.config.properties");
-		}
-		else if (new File("empire.xml").exists()) {
-			aConfigFile = new File("empire.xml");
-		}
-		else if (new File("empire.config.xml").exists()) {
-			aConfigFile = new File("empire.config.xml");
 		}
 
-		return aConfigFile != null;
+		Empire.init(aEmpireConfig,
+					aModules.toArray(new EmpireModule[aModules.size()]));
 	}
 
 	/**
